@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>失踪猫イレブンの謎</title>
+    <meta name="description" content="テキストアドベンチャー：失踪猫イレブンの謎" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/effects.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1 id="game-title">失踪猫イレブンの謎</h1>
+      <div class="header-right">
+        <div id="status" aria-live="polite"></div>
+        <button id="clearSaveBtn" class="ghost small" type="button" title="セーブデータを削除" aria-label="セーブデータを削除">データ削除</button>
+      </div>
+    </header>
+
+    <main id="app" class="app">
+      <section id="story" class="story" aria-live="polite"></section>
+      <nav id="choices" class="choices" aria-label="選択肢"></nav>
+      <div class="controls">
+        <button id="restartBtn" class="ghost" type="button">最初から</button>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <small>© 2024 Text-ADV001</small>
+    </footer>
+
+    <noscript>
+      <p>このゲームを遊ぶにはJavaScriptを有効にしてください。</p>
+    </noscript>
+
+    <!-- Seen Endings Modal -->
+    <div id="seenModal" class="modal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="seenTitle">
+        <div class="modal-header">
+          <h2 id="seenTitle">見たエンディング</h2>
+          <button id="modalCloseBtn" class="ghost small" type="button" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body">
+          <ul id="seenList" class="seen-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/endings.js"></script>
+    <script src="js/choices.js"></script>
+    <script src="js/story.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+  </html>

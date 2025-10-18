@@ -1,0 +1,13 @@
+/* 視覚効果とフォント効果（必要に応じて利用） */
+.fx-emphasis{ font-weight: 700 }
+.fx-quiet{ color: var(--muted) }
+.fx-warn{ color: #b45309 }
+.fx-info{ color: var(--accent) }
+.fx-mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace }
+.fx-big{ font-size: 1.2em }
+.fx-small{ font-size: .9em }
+
+/* シーンなどで使う簡易フェード */
+.fade-in{ animation: fade-in .26s ease-out both }
+@keyframes fade-in{from{opacity:0; transform: translateY(2px)} to{opacity:1; transform:none}}
+
