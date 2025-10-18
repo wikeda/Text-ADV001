@@ -8,6 +8,7 @@
   const seenModal = () => document.getElementById("seenModal");
   const seenListEl = () => document.getElementById("seenList");
   const completionBannerEl = () => document.getElementById("completionBanner");
+  const shareXBtn = () => document.getElementById("shareXBtn");
 
   function renderScene(sceneId){
     const scene = Story.getScene(sceneId);
@@ -89,6 +90,23 @@
     document.addEventListener("keydown", (e) => {
       if(e.key === "Escape" && !seenModal().hidden){ hideSeenModal(); }
     });
+
+    // Share to X: use Web Share if available, otherwise open intent URL
+    if(shareXBtn()){
+      shareXBtn().addEventListener('click', async () => {
+        const d = StorageAPI.load();
+        const seen = d.endingsSeen.length;
+        const all = seen === 15 || StorageAPI.hasFlag('allCleared');
+        const title = document.getElementById('game-title')?.textContent || '失踪猫イレブンの謎';
+        const text = `${title} 既読エンディング ${seen}/15${all ? ' コンプリート！' : ''}`;
+        const url = 'https://wikeda.github.io/Text-ADV001/';
+        if(navigator.share){
+          try{ await navigator.share({ text, url }); return; }catch(err){ /* fallback */ }
+        }
+        const intent = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(intent, '_blank', 'noopener');
+      });
+    }
   }
 
   function renderSeenList(){
@@ -122,6 +140,17 @@
 
   function showSeenModal(){
     renderSeenList();
+    // Update share intent URL attribute for progressive enhancement
+    try{
+      const d = StorageAPI.load();
+      const seen = d.endingsSeen.length;
+      const all = seen === 15 || StorageAPI.hasFlag('allCleared');
+      const title = document.getElementById('game-title')?.textContent || '失踪猫イレブンの謎';
+      const text = `${title} 既読エンディング ${seen}/15${all ? ' コンプリート！' : ''}`;
+      const url = 'https://wikeda.github.io/Text-ADV001/';
+      const intent = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+      if(shareXBtn()) shareXBtn().setAttribute('data-share-url', intent);
+    }catch(e){ /* noop */ }
     seenModal().hidden = false;
   }
   function hideSeenModal(){ seenModal().hidden = true; }
