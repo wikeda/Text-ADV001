@@ -168,3 +168,6 @@ body.ending-type-weird{ --ending-accent: var(--end-weird); }
     border-color: #facc1540; color: #facc15; background: linear-gradient(90deg, #1a1500, #2a2200);
   }
 }
+
+/* Ensure [hidden] always hides even if display is set elsewhere */
+[hidden]{ display: none !important }
