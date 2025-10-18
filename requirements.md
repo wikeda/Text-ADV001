@@ -185,3 +185,76 @@
 **作成日**：2024年12月
 **バージョン**：1.0
 **対象プラットフォーム**：GitHub Pages（Chrome推奨）
+
+
+## 図・フローチャート（実装準拠）
+
+### 基本ゲームフロー（概要）
+```mermaid
+flowchart TD
+    A[開始: 依頼を受ける] --> B[探索開始]
+    B --> C[手がかり収集]
+    C --> D{分岐}
+    D --> E[通常ルート]
+    D --> F[研究所ルート]
+    D --> G[掲示板/遠方ルート]
+    D --> H[不思議ルート]
+
+    E --> E1[happy/bad]
+    F --> T[true]
+    G --> H4[happy4]
+    H --> W[weird1..7]
+
+    classDef end fill:#e2e8f0,stroke:#94a3b8,color:#111;
+    classDef true fill:#dcfce7,stroke:#16a34a,color:#065f46;
+    classDef happy fill:#dbeafe,stroke:#2563eb,color:#1e3a8a;
+    classDef bad fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef weird fill:#ede9fe,stroke:#7c3aed,color:#312e81;
+
+    class E1 happy,bad
+    class T true
+    class H4 happy
+    class W weird
+```
+
+### 不思議ルートの段階開放（既読数ベース）
+```mermaid
+flowchart LR
+    S0[既読 0] -->|解放 0| W0[[不思議 0件]]
+    S1[既読 1以上] -->|解放 3| W3[[不思議 3件: weird1,2,3]]
+    S3[既読 3以上] -->|解放 5| W5[[不思議 5件: +weird4,5]]
+    S5[既読 5以上] -->|解放 7| W7[[不思議 7件: +weird6,7]]
+
+    note over W*: 未解禁の不思議ルートは
+      選択肢自体を非表示
+```
+
+### 研究所ゲート（段階解放とヒント）
+```mermaid
+flowchart TD
+    LG[研究所裏手 / lab_gate] --> K{鍵情報は十分か}
+    K -- scanned_tag && saw_cctv --> OPEN[正面ドアから侵入]
+    K -- scanned_tagのみ --> SIDE[サービス通路から侵入]
+    K -- 不足 --> HINT[ヒント表示]
+    HINT -->|タグをスキャン| TAG
+    HINT -->|カメラ映像確認| CCTV
+    TAG[scan_tag onEnter→scanned_tag] --> LG
+    CCTV[cctv onEnter→saw_cctv] --> LG
+    OPEN --> END_TRUE((true))
+    SIDE --> END_TRUE
+    classDef true fill:#dcfce7,stroke:#16a34a,color:#065f46;
+    class END_TRUE true
+```
+
+### 既読図鑑とコンプリート演出
+```mermaid
+flowchart TD
+    E[エンディング到達] --> R[既読にID追加]
+    R --> C{既読数=15?}
+    C -- Yes --> FLAG[allCleared=true]
+    FLAG --> CONFETTI[紙吹雪(初回のみ)]
+    C -->|Yes/No| OPEN[図鑑モーダルを開く]
+    OPEN --> B{見た数=15?}
+    B -- Yes --> BNR[「🏆 コンプリート」バナー表示]
+    B -- No --> HIDE[バナー非表示]
+```
