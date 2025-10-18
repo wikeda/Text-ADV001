@@ -140,11 +140,16 @@
 
   function showSeenModal(){
     renderSeenList();
+    // Toggle completion banner strictly by current count (avoid stale flag)
+    try{
+      const seen = (StorageAPI.load().endingsSeen || []).length;
+      if(completionBannerEl()) completionBannerEl().hidden = (seen !== 15);
+    }catch(e){ /* noop */ }
     // Update share intent URL attribute for progressive enhancement
     try{
       const d = StorageAPI.load();
       const seen = d.endingsSeen.length;
-      const all = seen === 15 || StorageAPI.hasFlag('allCleared');
+      const all = seen === 15; // 表示は現在数で判断
       const title = document.getElementById('game-title')?.textContent || '失踪猫イレブンの謎';
       const text = `${title} 既読エンディング ${seen}/15${all ? ' コンプリート！' : ''}`;
       const url = 'https://wikeda.github.io/Text-ADV001/';
