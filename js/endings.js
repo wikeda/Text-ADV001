@@ -137,6 +137,16 @@
     // 記録（エンディング連鎖用）
     const data = StorageAPI.addEnding(endingId);
 
+    // 全達成チェック（初回のみ）
+    try{
+      if(data.endingsSeen.length === 15 && !StorageAPI.hasFlag("allCleared")){
+        StorageAPI.setFlag("allCleared", true);
+        if(window.Game && typeof Game.showCompletion === "function"){
+          setTimeout(() => Game.showCompletion(), 200);
+        }
+      }
+    }catch(err){ console.warn("completion check error", err); }
+
     // エンディング演出モード + 種別クラス付与
     const typeMap = { "トゥルー": "true", "ハッピー": "happy", "バッド": "bad", "不思議": "weird" };
     const typeKey = typeMap[meta.kind] || (endingId.startsWith("weird") ? "weird" : "");

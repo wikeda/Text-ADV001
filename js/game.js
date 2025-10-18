@@ -7,6 +7,7 @@
   const statusEl = () => document.getElementById("status");
   const seenModal = () => document.getElementById("seenModal");
   const seenListEl = () => document.getElementById("seenList");
+  const completionBannerEl = () => document.getElementById("completionBanner");
 
   function renderScene(sceneId){
     const scene = Story.getScene(sceneId);
@@ -125,6 +126,57 @@
   }
   function hideSeenModal(){ seenModal().hidden = true; }
 
+  // Confetti animation (lightweight)
+  function runConfetti(durationMs = 3000){
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce) return;
+    const c = document.createElement('canvas');
+    c.id = 'confettiCanvas';
+    Object.assign(c.style, { position:'fixed', inset:'0', width:'100%', height:'100%', pointerEvents:'none', zIndex: 60 });
+    document.body.appendChild(c);
+    const ctx = c.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    function resize(){ c.width = innerWidth * dpr; c.height = innerHeight * dpr; }
+    resize();
+    const colors = ['#f59e0b','#10b981','#3b82f6','#ef4444','#8b5cf6'];
+    const N = Math.min(180, Math.floor((innerWidth*innerHeight)/12000));
+    const parts = Array.from({length:N}).map(()=>({
+      x: Math.random()*c.width,
+      y: -Math.random()*c.height,
+      vx: (Math.random()-0.5)*0.6*dpr,
+      vy: (Math.random()*1.5+0.8)*dpr,
+      size: (Math.random()*3+2)*dpr,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*Math.PI*2,
+      vr: (Math.random()-0.5)*0.2
+    }));
+    let start = performance.now();
+    function tick(t){
+      const dt = Math.min(33, t-(start||t)); start = t;
+      ctx.clearRect(0,0,c.width,c.height);
+      parts.forEach(p=>{
+        p.x += p.vx*dt*0.06; p.y += p.vy*dt*0.06; p.rot += p.vr*dt*0.06;
+        if(p.y > c.height) { p.y = -10; p.x = Math.random()*c.width; }
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+        ctx.restore();
+      });
+      if(t - parts[0].t0 < durationMs){
+        raf = requestAnimationFrame(tick);
+      }
+    }
+    let raf = requestAnimationFrame(tick);
+    setTimeout(()=>{ cancelAnimationFrame(raf); c.remove(); }, durationMs+400);
+    window.addEventListener('resize', resize, { once: true });
+  }
+
+  function showCompletion(){
+    // show banner in modal and confetti
+    if(completionBannerEl()){ completionBannerEl().hidden = false; }
+    runConfetti(3000);
+    showSeenModal();
+  }
+
   function init(){
     bindUI();
     // 既存の進行があれば再開、なければ新規開始
@@ -142,6 +194,6 @@
     renderScene(current);
   }
 
-  global.Game = { init, goToScene, startNew, updateStatus, registerFail };
+  global.Game = { init, goToScene, startNew, updateStatus, registerFail, showCompletion };
   window.addEventListener("DOMContentLoaded", init);
 })(window);
